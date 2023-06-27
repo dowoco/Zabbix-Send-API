@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir --upgrade  -r /requirements.txt
 COPY . /app
 WORKDIR /app
 
+chmod +x bootstrap.sh
 
 # Start app
 ENTRYPOINT ["./bootstrap.sh"]
