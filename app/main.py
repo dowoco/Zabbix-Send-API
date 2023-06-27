@@ -1,5 +1,3 @@
-import logging
-from pyzabbix import ZabbixMetric, ZabbixSender
 from flask import Flask, request
 
 app = Flask(__name__)
@@ -11,27 +9,28 @@ app.logger.setLevel(gunicorn_logger.level)
 @app.route('/metrics', methods=['POST'])
 def processMetric():
     empty_values = 0
-
     content_type = request.headers.get('Content-Type')
-
     if (content_type == 'application/json'):
-       result=request.get_json()
+       try:
+           result=request.get_json()
+          if "server" not in result:
+             app.logger.error("Missing server parameter!")
+             empty_values += 1
 
-       if "server" not in result:
-          app.logger.error("Missing server parameter!")
-          empty_values += 1
+          if "host" not in result:
+             app.logger.error("Missing host parameter!")
+             empty_values += 1
 
-       if "host" not in result:
-          app.logger.error("Missing host parameter!")
-          empty_values += 1
+          if "key" not in result:
+             app.logger.error("Missing key parameter!")
+             empty_values += 1
 
-       if "key" not in result:
-          app.logger.error("Missing key parameter!")
-          empty_values += 1
-
-       if "value" not in result:
-          app.logger.error("Missing value parameter")
-          empty_values += 1
+          if "value" not in result:
+             app.logger.error("Missing value parameter")
+             empty_values += 1
+       except:
+             app.logger.error("Issue with parameters!")
+             return 'Problem with Parameters!'
 
        if empty_values == 0:
           try:
@@ -45,10 +44,14 @@ def processMetric():
                 return 'Update Successful!'
              else:
                 app.logger.error("Upload unsuccesseful!")
-                return 'Metric no Uploaded"!'
+                return 'Metric no Uploaded!'
           except:
              app.logger.error("Unable to send data to Zabbix Server")
              return 'Error Sending Data!'
        else:
           app.logger.error("Missing one or more Parameters!")
           return 'Missing Parameters!'
+
+    else:
+       app.logger.error("Content-Type not supported!")
+       return 'Content-Type not supported!'
