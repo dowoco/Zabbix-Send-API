@@ -1,10 +1,11 @@
-app_name=dowoco/zabbix-send-api
+image_name=dowoco/zabbix-send-api
+app_name=zabbix-send-api
 
 build:
-        docker build -t $(app_name) .
+        docker build -t $(image_name) .
 
 run:
-        docker run --detach -p 5000:5000 --name="$(app_name)" $(app_name)
+        docker run --detach -p 5000:5000 --name="$(app_name)" $(image_name)
 
 kill:
         @echo 'Killing container...'
