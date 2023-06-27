@@ -14,6 +14,3 @@ WORKDIR /app
 
 # Start app
 ENTRYPOINT ["./bootstrap.sh"]
-#!/bin/sh
-
-#CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:create_app()"]
